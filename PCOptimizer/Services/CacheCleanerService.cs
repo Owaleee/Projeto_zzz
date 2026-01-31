@@ -9,7 +9,7 @@ namespace PCOptimizer.Services
 {
 	public static class CacheCleanerService
 	{
-		// Método principal para limpar cache - DEVE SER STATIC
+		// Método principal para limpar cache
 		public static void ExecutarLimpezaCompleta()
 		{
 			if (!IsRunningAsAdministrator())
@@ -23,22 +23,33 @@ namespace PCOptimizer.Services
 
 			try
 			{
-				// para testar cada função só comentar cada função
-				LimparCacheNavegadores();
-				// LimparCacheSistema();
-				// LimparCacheTemporario();
-				LimparCookiesNavegadores();
-				LimparCacheDNS();
+				// Para testar cada função só comentar cada função
+				bool navegadoresOk = LimparCacheNavegadores();
+				bool sistemaOk = LimparCacheSistema();
+				bool tempOk = LimparCacheTemporario();
+				bool cookiesOk = LimparCookiesNavegadores();
+				bool dnsOk = LimparCacheDNS();
 
-				Console.WriteLine("Limpeza concluída com sucesso!");
+				// Resumo da execução
+				Console.WriteLine("\n" + new string('=', 50));
+				Console.WriteLine("RESUMO DA LIMPEZA:");
+				Console.WriteLine(new string('=', 50));
+				Console.WriteLine($"✓ Cache de navegadores: {(navegadoresOk ? "SUCESSO" : "FALHA PARCIAL")}");
+				Console.WriteLine($"✓ Cache do sistema: {(sistemaOk ? "SUCESSO" : "FALHA PARCIAL")}");
+				Console.WriteLine($"✓ Arquivos temporários: {(tempOk ? "SUCESSO" : "FALHA PARCIAL")}");
+				Console.WriteLine($"✓ Cookies: {(cookiesOk ? "SUCESSO" : "FALHA PARCIAL")}");
+				Console.WriteLine($"✓ Cache DNS: {(dnsOk ? "SUCESSO" : "FALHA")}");
+				Console.WriteLine(new string('=', 50));
+
+				Console.WriteLine("\n✅ Limpeza concluída!");
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine($"Erro durante a limpeza: {ex.Message}");
+				Console.WriteLine($"\n❌ Erro durante a limpeza: {ex.Message}");
 			}
 		}
 
-		// Verifica se está executando como administrador - DEVE SER STATIC
+		// Verifica se está executando como administrador
 		private static bool IsRunningAsAdministrator()
 		{
 			var identity = WindowsIdentity.GetCurrent();
@@ -46,15 +57,18 @@ namespace PCOptimizer.Services
 			return principal.IsInRole(WindowsBuiltInRole.Administrator);
 		}
 
-		// Limpa cache dos navegadores principais - DEVE SER STATIC
-		private static void LimparCacheNavegadores()
+		// Limpa cache dos navegadores principais - Retorna true se tudo OK, false se algum erro
+		private static bool LimparCacheNavegadores()
 		{
 			Console.WriteLine("\n[1/5] Limpando cache de navegadores...");
+			bool sucessoTotal = true;
+			int navegadoresProcessados = 0;
+			int pastasLimpas = 0;
 
 			var navegadores = new Dictionary<string, string[]>
 			{
-                // Chrome
-                {
+				// Chrome
+				{
 					"Chrome", new[]
 					{
 						$@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Google\Chrome\User Data\Default\Cache",
@@ -63,26 +77,26 @@ namespace PCOptimizer.Services
 						$@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Google\Chrome\User Data\Default\GPUCache"
 					}
 				},
-                /*// Edge
-                {
-                    "Edge", new[]
-                    {
-                        $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Microsoft\Edge\User Data\Default\Cache",
-                        $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Microsoft\Edge\User Data\Default\Cache2",
-                        $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Microsoft\Edge\User Data\Default\Code Cache",
-                        $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Microsoft\Edge\User Data\Default\GPUCache"
-                    }
-                },*/
-                // Firefox
-                {
+				// Edge
+				{
+					"Edge", new[]
+					{
+						$@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Microsoft\Edge\User Data\Default\Cache",
+						$@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Microsoft\Edge\User Data\Default\Cache2",
+						$@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Microsoft\Edge\User Data\Default\Code Cache",
+						$@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Microsoft\Edge\User Data\Default\GPUCache"
+					}
+				},
+				// Firefox
+				{
 					"Firefox", new[]
 					{
 						$@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\Mozilla\Firefox\Profiles",
 						$@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Mozilla\Firefox\Profiles"
 					}
 				},
-                // Opera
-                {
+				// Opera
+				{
 					"Opera", new[]
 					{
 						$@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\Opera Software\Opera Stable\Cache",
@@ -94,6 +108,7 @@ namespace PCOptimizer.Services
 			foreach (var navegador in navegadores)
 			{
 				Console.WriteLine($"  Processando {navegador.Key}...");
+				navegadoresProcessados++;
 
 				foreach (var caminho in navegador.Value)
 				{
@@ -101,35 +116,50 @@ namespace PCOptimizer.Services
 					{
 						try
 						{
-							LimparDiretorio(caminho);
-							Console.WriteLine($"    ✓ Cache limpo: {caminho}");
+							bool sucesso = LimparDiretorio(caminho);
+							if (sucesso)
+							{
+								Console.WriteLine($"    ✓ Cache limpo: {Path.GetFileName(caminho)}");
+								pastasLimpas++;
+							}
+							else
+							{
+								Console.WriteLine($"    ⚠ Cache parcialmente limpo: {Path.GetFileName(caminho)}");
+								sucessoTotal = false;
+							}
 						}
 						catch (Exception ex)
 						{
-							Console.WriteLine($"    ✗ Erro em {caminho}: {ex.Message}");
+							Console.WriteLine($"    ✗ Erro em {Path.GetFileName(caminho)}: {ex.Message}");
+							sucessoTotal = false;
 						}
 					}
 				}
 			}
+
+			Console.WriteLine($"  → Resultado: {navegadoresProcessados} navegadores processados, {pastasLimpas} pastas limpas");
+			return sucessoTotal;
 		}
 
-		// Limpa cookies dos navegadores - DEVE SER STATIC
-		private static void LimparCookiesNavegadores()
+		// Limpa cookies dos navegadores - Retorna true se tudo OK, false se algum erro
+		private static bool LimparCookiesNavegadores()
 		{
 			Console.WriteLine("\n[2/5] Limpando cookies...");
+			bool sucessoTotal = true;
+			int arquivosRemovidos = 0;
 
 			var cookiesPaths = new[]
 			{
-                // Chrome Cookies
-                $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Google\Chrome\User Data\Default\Cookies",
+				// Chrome Cookies
+				$@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Google\Chrome\User Data\Default\Cookies",
 				$@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Google\Chrome\User Data\Default\Cookies-journal",
-                
-                /*// Edge Cookies
-                $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Microsoft\Edge\User Data\Default\Cookies",
-                $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Microsoft\Edge\User Data\Default\Cookies-journal",
-                */
-                // Firefox Cookies (arquivo SQLite)
-                $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\Mozilla\Firefox\Profiles"
+				
+				// Edge Cookies
+				$@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Microsoft\Edge\User Data\Default\Cookies",
+				$@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Microsoft\Edge\User Data\Default\Cookies-journal",
+				
+				// Firefox Cookies (arquivo SQLite)
+				$@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\Mozilla\Firefox\Profiles"
 			};
 
 			foreach (var caminho in cookiesPaths)
@@ -139,6 +169,7 @@ namespace PCOptimizer.Services
 					if (File.Exists(caminho))
 					{
 						File.Delete(caminho);
+						arquivosRemovidos++;
 						Console.WriteLine($"    ✓ Cookies removidos: {Path.GetFileName(caminho)}");
 					}
 					else if (Directory.Exists(caminho) && caminho.Contains("Firefox"))
@@ -149,41 +180,49 @@ namespace PCOptimizer.Services
 						{
 							File.Delete(file);
 							File.Delete(file + "-journal"); // Remove também o journal
-							Console.WriteLine($"    ✓ Cookies Firefox removidos");
+							arquivosRemovidos += 2;
 						}
+						if (cookieFiles.Length > 0)
+							Console.WriteLine($"    ✓ Cookies Firefox removidos: {cookieFiles.Length} arquivos");
 					}
 				}
 				catch (Exception ex)
 				{
 					Console.WriteLine($"    ✗ Erro ao remover cookies: {ex.Message}");
+					sucessoTotal = false;
 				}
 			}
+
+			Console.WriteLine($"  → Resultado: {arquivosRemovidos} arquivos de cookies removidos");
+			return sucessoTotal;
 		}
 
-		// Limpa cache do sistema - DEVE SER STATIC
-		private static void LimparCacheSistema()
+		// Limpa cache do sistema - Retorna true se tudo OK, false se algum erro
+		private static bool LimparCacheSistema()
 		{
 			Console.WriteLine("\n[3/5] Limpando cache do sistema...");
+			bool sucessoTotal = true;
+			int pastasLimpas = 0;
 
 			var systemPaths = new[]
 			{
-                // Temp do sistema
-                Path.GetTempPath(),
-                
-                // Temp do usuário
-                $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Temp",
-                
-                // Windows Temp
-                $@"{Environment.GetFolderPath(Environment.SpecialFolder.Windows)}\Temp",
-                
-                // Prefetch (Windows)
-                $@"{Environment.GetFolderPath(Environment.SpecialFolder.Windows)}\Prefetch",
-                
-                // Thumbnails
-                $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Microsoft\Windows\Explorer",
-                
-                // Recent files
-                $@"{Environment.GetFolderPath(Environment.SpecialFolder.Recent)}"
+				// Temp do sistema
+				Path.GetTempPath(),
+				
+				// Temp do usuário
+				$@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Temp",
+				
+				// Windows Temp
+				$@"{Environment.GetFolderPath(Environment.SpecialFolder.Windows)}\Temp",
+				
+				// Prefetch (Windows)
+				$@"{Environment.GetFolderPath(Environment.SpecialFolder.Windows)}\Prefetch",
+				
+				// Thumbnails
+				$@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Microsoft\Windows\Explorer",
+				
+				// Recent files
+				$@"{Environment.GetFolderPath(Environment.SpecialFolder.Recent)}"
 			};
 
 			foreach (var caminho in systemPaths)
@@ -192,21 +231,36 @@ namespace PCOptimizer.Services
 				{
 					try
 					{
-						LimparDiretorio(caminho);
-						Console.WriteLine($"    ✓ Sistema limpo: {Path.GetFileName(caminho)}");
+						bool sucesso = LimparDiretorio(caminho);
+						if (sucesso)
+						{
+							Console.WriteLine($"    ✓ Sistema limpo: {Path.GetFileName(caminho)}");
+							pastasLimpas++;
+						}
+						else
+						{
+							Console.WriteLine($"    ⚠ Sistema parcialmente limpo: {Path.GetFileName(caminho)}");
+							sucessoTotal = false;
+						}
 					}
 					catch (Exception ex)
 					{
-						Console.WriteLine($"    ✗ Erro em {caminho}: {ex.Message}");
+						Console.WriteLine($"    ✗ Erro em {Path.GetFileName(caminho)}: {ex.Message}");
+						sucessoTotal = false;
 					}
 				}
 			}
+
+			Console.WriteLine($"  → Resultado: {pastasLimpas} pastas do sistema limpas");
+			return sucessoTotal;
 		}
 
-		// Limpa diretório temporário - DEVE SER STATIC
-		private static void LimparCacheTemporario()
+		// Limpa diretório temporário - Retorna true se tudo OK, false se algum erro
+		private static bool LimparCacheTemporario()
 		{
 			Console.WriteLine("\n[4/5] Limpando arquivos temporários...");
+			int arquivosRemovidos = 0;
+			bool sucesso = true;
 
 			try
 			{
@@ -217,21 +271,30 @@ namespace PCOptimizer.Services
 					try
 					{
 						File.Delete(file);
+						arquivosRemovidos++;
 					}
-					catch { }
+					catch
+					{
+						sucesso = false;
+					}
 				}
-				Console.WriteLine($"    ✓ {tempFiles.Length} arquivos .tmp removidos");
+				Console.WriteLine($"    ✓ {arquivosRemovidos} arquivos .tmp removidos");
 			}
 			catch (Exception ex)
 			{
 				Console.WriteLine($"    ✗ Erro ao limpar temporários: {ex.Message}");
+				sucesso = false;
 			}
+
+			Console.WriteLine($"  → Resultado: {arquivosRemovidos} arquivos temporários removidos");
+			return sucesso;
 		}
 
-		// Limpa cache DNS - DEVE SER STATIC
-		private static void LimparCacheDNS()
+		// Limpa cache DNS - Retorna true se tudo OK, false se falhar
+		private static bool LimparCacheDNS()
 		{
 			Console.WriteLine("\n[5/5] Limpando cache DNS...");
+			bool sucesso = false;
 
 			try
 			{
@@ -247,21 +310,36 @@ namespace PCOptimizer.Services
 				process.Start();
 				process.WaitForExit();
 
-				Console.WriteLine("    ✓ Cache DNS limpo");
+				// Verifica se o processo terminou com sucesso (código 0)
+				if (process.ExitCode == 0)
+				{
+					Console.WriteLine("    ✓ Cache DNS limpo");
+					sucesso = true;
+				}
+				else
+				{
+					Console.WriteLine($"    ✗ Erro ao limpar DNS (código: {process.ExitCode})");
+				}
 			}
 			catch (Exception ex)
 			{
 				Console.WriteLine($"    ✗ Erro ao limpar DNS: {ex.Message}");
 			}
+
+			Console.WriteLine($"  → Resultado: {(sucesso ? "DNS limpo com sucesso" : "Falha ao limpar DNS")}");
+			return sucesso;
 		}
 
-		// Método auxiliar para limpar diretório - DEVE SER STATIC
-		private static void LimparDiretorio(string caminho)
+		// Método auxiliar para limpar diretório - Retorna true se tudo OK, false se algum erro
+		private static bool LimparDiretorio(string caminho)
 		{
 			if (!Directory.Exists(caminho))
-				return;
+				return true; // Se não existe, consideramos "sucesso"
 
 			var dirInfo = new DirectoryInfo(caminho);
+			bool sucessoTotal = true;
+			int arquivosRemovidos = 0;
+			int pastasRemovidas = 0;
 
 			// Limpa arquivos
 			foreach (var file in dirInfo.GetFiles())
@@ -269,10 +347,12 @@ namespace PCOptimizer.Services
 				try
 				{
 					file.Delete();
+					arquivosRemovidos++;
 				}
 				catch (Exception ex)
 				{
 					Console.WriteLine($"      Não foi possível excluir {file.Name}: {ex.Message}");
+					sucessoTotal = false;
 				}
 			}
 
@@ -282,18 +362,30 @@ namespace PCOptimizer.Services
 				try
 				{
 					dir.Delete(true);
+					pastasRemovidas++;
 				}
 				catch (Exception ex)
 				{
 					Console.WriteLine($"      Não foi possível excluir {dir.Name}: {ex.Message}");
+					sucessoTotal = false;
 				}
 			}
+
+			// Log detalhado (opcional)
+			if (arquivosRemovidos > 0 || pastasRemovidas > 0)
+			{
+				Console.WriteLine($"      Removidos: {arquivosRemovidos} arquivos, {pastasRemovidas} pastas");
+			}
+
+			return sucessoTotal;
 		}
 
-		// Método para limpar cache de um aplicativo específico - DEVE SER STATIC
-		public static void LimparCacheAplicativo(string nomeApp)
+		// Método para limpar cache de um aplicativo específico - Retorna true se tudo OK
+		public static bool LimparCacheAplicativo(string nomeApp)
 		{
 			Console.WriteLine($"\nLimpando cache do {nomeApp}...");
+			bool sucessoTotal = true;
+			int pastasLimpas = 0;
 
 			var appPaths = new[]
 			{
@@ -308,15 +400,53 @@ namespace PCOptimizer.Services
 				{
 					try
 					{
-						LimparDiretorio(caminho);
-						Console.WriteLine($"    ✓ {nomeApp} limpo: {caminho}");
+						bool sucesso = LimparDiretorio(caminho);
+						if (sucesso)
+						{
+							Console.WriteLine($"    ✓ {nomeApp} limpo: {Path.GetFileName(caminho)}");
+							pastasLimpas++;
+						}
+						else
+						{
+							Console.WriteLine($"    ⚠ {nomeApp} parcialmente limpo: {Path.GetFileName(caminho)}");
+							sucessoTotal = false;
+						}
 					}
 					catch (Exception ex)
 					{
 						Console.WriteLine($"    ✗ Erro em {nomeApp}: {ex.Message}");
+						sucessoTotal = false;
 					}
 				}
 			}
+
+			Console.WriteLine($"  → Resultado: {pastasLimpas} pastas do {nomeApp} limpas");
+			return sucessoTotal;
+		}
+
+		// Métodos públicos para testar funções individuais com retorno
+		public static bool TestarLimpezaNavegadores()
+		{
+			Console.WriteLine("\n=== TESTE: LIMPEZA DE NAVEGADORES ===");
+			return LimparCacheNavegadores();
+		}
+
+		public static bool TestarLimpezaCookies()
+		{
+			Console.WriteLine("\n=== TESTE: LIMPEZA DE COOKIES ===");
+			return LimparCookiesNavegadores();
+		}
+
+		public static bool TestarLimpezaSistema()
+		{
+			Console.WriteLine("\n=== TESTE: LIMPEZA DO SISTEMA ===");
+			return LimparCacheSistema();
+		}
+
+		public static bool TestarLimpezaDNS()
+		{
+			Console.WriteLine("\n=== TESTE: LIMPEZA DNS ===");
+			return LimparCacheDNS();
 		}
 	}
 }

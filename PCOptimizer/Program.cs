@@ -11,6 +11,8 @@ namespace PCOptimizer
         static void Main()
         {
 
+            //DESCOMENTAR A PARTE EXATA QUE VOCÊ QUER USAR, Ainda Não existe interface
+
             /*
             // Define o título do console para melhor UX
             Console.Title = "PC Optimizer - Ferramentas de Sistema";
@@ -21,7 +23,7 @@ namespace PCOptimizer
             // Impede que o console feche imediatamente após o término
             Console.WriteLine("\n-------------------------------------------");
             Console.WriteLine("Pressione qualquer tecla para sair...");
-            Console.ReadKey();*/
+            Console.ReadKey();
 
             // TESTE 1: Mensagem inicial para confirmar que este código roda
             Console.Title = "PC OPTIMIZER - TESTE CACHE CLEANER";
@@ -33,11 +35,8 @@ namespace PCOptimizer
             // Executa a limpeza de cache
             CacheCleanerService.ExecutarLimpezaCompleta();
 
-            // TESTE 3: Mensagem final
-            Console.WriteLine("\n=== PROGRAMA FINALIZADO ===");
-            Console.WriteLine("Pressione qualquer tecla para sair...");
             Console.ReadKey();
-
+            */
 
 
         }
