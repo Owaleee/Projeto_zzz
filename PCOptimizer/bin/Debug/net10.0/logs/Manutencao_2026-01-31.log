@@ -1,0 +1,11 @@
+[10:01:49] Iniciando Manutenção Completa (Combo)
+[10:01:49] >>> INICIANDO REPARO DE IMAGEM (DISM /RestoreHealth)
+[10:01:49] DISM Detalhe: Ferramenta de Gerenciamento e Manuten��o de Imagens de Implanta��o
+[10:01:49] DISM Detalhe: Vers�o: 10.0.26100.5074
+[10:01:49] DISM Detalhe: Vers�o da Imagem: 10.0.26200.7628
+[10:03:43] DISM Detalhe: Opera��o de restaura��o conclu�da com �xito.
+[10:03:43] DISM Detalhe: A opera��o foi conclu�da com �xito.
+[10:03:43] DISM: Processo finalizado. Código de saída: 0
+[10:03:43] >>> INICIANDO VERIFICAÇÃO DE ARQUIVOS (SFC /SCANNOW)
+[10:04:54] SFC Detalhe: A Prote��o de Recursos do Windows encontrou arquivos corrompidos e os reparou com �xito.
+[10:04:54] SFC: Finalizado. Código: 0
