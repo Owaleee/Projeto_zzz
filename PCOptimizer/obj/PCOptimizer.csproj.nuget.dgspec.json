@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\owale\\OneDrive\\Documents\\GitHub\\Projeto_zz\\PCOptimizer\\PCOptimizer.csproj": {}
+    "C:\\Users\\owale\\OneDrive\\Documents\\GitHub\\Projeto_zzz\\PCOptimizer\\PCOptimizer.csproj": {}
   },
   "projects": {
-    "C:\\Users\\owale\\OneDrive\\Documents\\GitHub\\Projeto_zz\\PCOptimizer\\PCOptimizer.csproj": {
+    "C:\\Users\\owale\\OneDrive\\Documents\\GitHub\\Projeto_zzz\\PCOptimizer\\PCOptimizer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\owale\\OneDrive\\Documents\\GitHub\\Projeto_zz\\PCOptimizer\\PCOptimizer.csproj",
+        "projectUniqueName": "C:\\Users\\owale\\OneDrive\\Documents\\GitHub\\Projeto_zzz\\PCOptimizer\\PCOptimizer.csproj",
         "projectName": "PCOptimizer",
-        "projectPath": "C:\\Users\\owale\\OneDrive\\Documents\\GitHub\\Projeto_zz\\PCOptimizer\\PCOptimizer.csproj",
+        "projectPath": "C:\\Users\\owale\\OneDrive\\Documents\\GitHub\\Projeto_zzz\\PCOptimizer\\PCOptimizer.csproj",
         "packagesPath": "C:\\Users\\owale\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\owale\\OneDrive\\Documents\\GitHub\\Projeto_zz\\PCOptimizer\\obj\\",
+        "outputPath": "C:\\Users\\owale\\OneDrive\\Documents\\GitHub\\Projeto_zzz\\PCOptimizer\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

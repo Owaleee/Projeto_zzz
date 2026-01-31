@@ -18,8 +18,8 @@ namespace PCOptimizer.Services
 			Console.ForegroundColor = ConsoleColor.Yellow;
 			Console.WriteLine("Iniciando Reparo da Imagem do Sistema (DISM)...");
 			Console.WriteLine("-----------------------------------------------------------");
-			Console.WriteLine("AVISO: Este processo é demorado (5 a 20 minutos).");
-			Console.WriteLine("É normal o progresso parecer 'parado' em certas etapas.");
+			Console.WriteLine("AVISO: Este processo ï¿½ demorado (5 a 20 minutos).");
+			Console.WriteLine("ï¿½ normal o progresso parecer 'parado' em certas etapas.");
 			Console.WriteLine("-----------------------------------------------------------\n");
 			Console.ResetColor();
 
@@ -50,11 +50,11 @@ namespace PCOptimizer.Services
 				}
 
 				process.WaitForExit();
-				Logger.Log($"DISM: Processo finalizado. Código de saída: {process.ExitCode}");
+				Logger.Log($"DISM: Processo finalizado. Cï¿½digo de saï¿½da: {process.ExitCode}");
 			}
 			catch (Exception ex)
 			{
-				string erroMsg = $"ERRO CRÍTICO NO DISM: {ex.Message}";
+				string erroMsg = $"ERRO CRï¿½TICO NO DISM: {ex.Message}";
 				Console.WriteLine($"\n{erroMsg}");
 				Logger.Log(erroMsg);
 			}
@@ -62,7 +62,7 @@ namespace PCOptimizer.Services
 
 		private static void ParseOutput(string line)
 		{
-			// 1. Filtra progresso numérico (ex: 10.0%) para exibição dinâmica no console
+			// 1. Filtra progresso numï¿½rico (ex: 10.0%) para exibiï¿½ï¿½o dinï¿½mica no console
 			var progressMatch = Regex.Match(line, @"(\d+\.\d+)%");
 			if (progressMatch.Success)
 			{
@@ -76,12 +76,12 @@ namespace PCOptimizer.Services
 				return;
 			}
 
-			// 3. Captura informações textuais relevantes
+			// 3. Captura informaï¿½ï¿½es textuais relevantes
 			string trimmedLine = line.Trim();
 			if (!string.IsNullOrEmpty(trimmedLine) && trimmedLine.Length > 5)
 			{
-				// Se for a mensagem de conclusão com êxito, destacamos em verde
-				if (trimmedLine.Contains("successfully") || trimmedLine.Contains("êxito"))
+				// Se for a mensagem de conclusï¿½o com ï¿½xito, destacamos em verde
+				if (trimmedLine.Contains("successfully") || trimmedLine.Contains("ï¿½xito"))
 				{
 					Console.ForegroundColor = ConsoleColor.Green;
 					Console.WriteLine($"\n\n[RESULTADO]: {trimmedLine}");
@@ -89,7 +89,7 @@ namespace PCOptimizer.Services
 				}
 				else
 				{
-					// Outras informações informativas do DISM
+					// Outras informaï¿½ï¿½es informativas do DISM
 					Console.WriteLine($"\n[DISM INFO]: {trimmedLine}");
 				}
 

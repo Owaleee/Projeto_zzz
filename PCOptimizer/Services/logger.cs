@@ -18,7 +18,7 @@ namespace PCOptimizer.Services
 
                 string logEntry = $"[{DateTime.Now:HH:mm:ss}] {message}";
 
-                // Escreve no arquivo (Append) e também no Console se necessário
+                // Escreve no arquivo (Append) e tambï¿½m no Console se necessï¿½rio
                 File.AppendAllText(filePath, logEntry + Environment.NewLine);
             }
             catch (Exception ex)
