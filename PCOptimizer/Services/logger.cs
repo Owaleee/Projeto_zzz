@@ -15,10 +15,10 @@ namespace PCOptimizer.Services
 
                 string fileName = $"Manutencao_{DateTime.Now:yyyy-MM-dd}.log";
                 string filePath = Path.Combine(LogPath, fileName);
-                
+
                 string logEntry = $"[{DateTime.Now:HH:mm:ss}] {message}";
 
-                // Escreve no arquivo (Append) e também no Console se necessário
+                // Escreve no arquivo (Append) e tamb�m no Console se necess�rio
                 File.AppendAllText(filePath, logEntry + Environment.NewLine);
             }
             catch (Exception ex)

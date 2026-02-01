@@ -13,10 +13,10 @@ namespace PCOptimizer.Services
         {
             if (!OperatingSystem.IsWindows()) return;
 
-            Logger.Log(">>> INICIANDO VERIFICAÇÃO DE ARQUIVOS (SFC /SCANNOW)");
+            Logger.Log(">>> INICIANDO VERIFICA��O DE ARQUIVOS (SFC /SCANNOW)");
 
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("Iniciando Verificação de Integridade do Sistema (SFC)...");
+            Console.WriteLine("Iniciando Verifica��o de Integridade do Sistema (SFC)...");
             Console.WriteLine("-----------------------------------------------------------");
             Console.WriteLine("Aguarde... Corrigindo encoding e filtrando resultados.");
             Console.WriteLine("-----------------------------------------------------------\n");
@@ -51,7 +51,7 @@ namespace PCOptimizer.Services
                 }
 
                 process.WaitForExit();
-                Logger.Log("SFC: Finalizado. Código: " + process.ExitCode);
+                Logger.Log("SFC: Finalizado. C�digo: " + process.ExitCode);
             }
             catch (Exception ex)
             {
@@ -67,17 +67,17 @@ namespace PCOptimizer.Services
             if (progressMatch.Success)
             {
                 string p = progressMatch.Groups[1].Value;
-                // Mudamos a forma de escrever para evitar que o compilador ache que [] é um atributo
+                // Mudamos a forma de escrever para evitar que o compilador ache que [] � um atributo
                 Console.Write("\rProgresso SFC: [" + p + "%] ");
-                return; 
+                return;
             }
 
             // 2. Filtra apenas mensagens importantes
-            if (line.Contains("Proteção") || line.Contains("Resource Protection") || 
+            if (line.Contains("Prote��o") || line.Contains("Resource Protection") ||
                 line.Contains("corrompidos") || line.Contains("reparou"))
             {
                 string msg = line.Trim();
-                // Usando concatenação simples para garantir que o contexto seja entendido como string
+                // Usando concatena��o simples para garantir que o contexto seja entendido como string
                 Console.WriteLine("\n[SFC]: " + msg);
                 Logger.Log("SFC Detalhe: " + msg);
             }

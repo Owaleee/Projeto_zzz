@@ -10,6 +10,8 @@ namespace PCOptimizer
         {
             Console.Title = "PC Optimizer - Central de Manutenção";
 
+
+
             // Verifica se o processo atual possui privilégios elevados (necessário para DISM/SFC)
             if (!IsAdministrator())
             {
@@ -53,6 +55,13 @@ namespace PCOptimizer
                         break;
                 }
             }
+
+            // Executa a limpeza de cache
+            /*CacheCleanerService.ExecutarLimpezaCompleta();
+
+            Console.ReadKey();
+            */
+
         }
 
         static void ExibirMenu()
@@ -89,5 +98,7 @@ namespace PCOptimizer
             var principal = new WindowsPrincipal(identity);
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
+
+
     }
 }
